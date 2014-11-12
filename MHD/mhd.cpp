@@ -60,21 +60,39 @@ void MHD::exp()
         for(int i=0;i<nx;i++)
         {
             p[i]=2.*pow(h[i][j],gamma); //values of pressure for current time step
-        }
 
-        for(int i=1;i<nx-1;i++) //explicit scheme
+
+        }
+        if(j==4)write(p,nx,"test.dat");
+
+        double Brho, Bvx, Bh;
+
+
+        for(int i=1;i<nx-2;i++) //explicit scheme
         {
-            rho[i][j+1]=rho[i][j]*(1-b*(vx[i+1][j]-vx[i-1][j])-2*nu*a)+rho[i+1][j]*(-b*vx[i][j]+nu*a)+rho[i-1][j]*(b*vx[i][j]+nu*a);
+            rho[i][j+1]=rho[i][j]*(1.-b*(vx[i+1][j]-vx[i-1][j])-2.*nu*a)+rho[i+1][j]*(-b*vx[i][j]+nu*a)+rho[i-1][j]*(b*vx[i][j]+nu*a);
 
             P=(p[i+1]-p[i-1])/(4*dx);
-            rhovx[i][j+1]=rhovx[i][j]*(1-2*nu*a)+rhovx[i+1][j]*(-b*vx[i+1][j]+nu*a)+rhovx[i-1][j]*(+b*vx[i-1][j]+nu*a)-P;
+            rhovx[i][j+1]=rhovx[i][j]*(1.-2.*nu*a)+rhovx[i+1][j]*(-b*vx[i+1][j]+nu*a)+rhovx[i-1][j]*(b*vx[i-1][j]+nu*a)-P;
 
-            h[i][j+1]=h[i][j]*(1-b*(vx[i+1][j]-vx[i-1][j])-2*nu*a)+h[i+1][j]*(-b*vx[i][j]+nu*a)+h[i-1][j]*(b*vx[i][j]+nu*a);
+            h[i][j+1]=h[i][j]*(1.-b*(vx[i+1][j]-vx[i-1][j])-2.*nu*a)+h[i+1][j]*(-b*vx[i][j]+nu*a)+h[i-1][j]*(b*vx[i][j]+nu*a);
 
             vx[i][j+1]=rhovx[i][j+1]/rho[i][j+1];
 
         }
-    }
+
+        rho[0][j+1]=rho[nx-2][j+1];
+        vx[0][j+1]=vx[nx-2][j+1];
+        h[0][j+1]=h[nx-2][j+1];
+
+        rho[nx-1][j+1]=rho[1][j+1];
+        vx[nx-1][j+1]=vx[1][j+1];
+        h[nx-1][j+1]=h[1][j+1];
+
+
+
+   }
+
 }
 void MHD::write(double* x, int n, char*file)
 {
