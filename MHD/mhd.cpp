@@ -49,33 +49,34 @@ void MHD::setup(double *RHO,double *H,double *VX,double *BX)
 
 void MHD::exp()
 {
-    double a=dt/(2*dx);
-    double b=dt/(dx*dx);
+    double b=dt/(2.*dx);
+    double a=dt/(dx*dx);
     p = new double[nx];
     double P;
 
 
    for(int j=0;j<nt;j++)
     {
-        for(int i=0;i<nx;i++)
+       for(int i=0;i<nx;i++)
         {
             p[i]=2.*pow(h[i][j],gamma); //values of pressure for current time step
 
 
         }
-        if(j==4)write(p,nx,"test.dat");
 
-        double Brho, Bvx, Bh;
-
-
-        for(int i=1;i<nx-2;i++) //explicit scheme
+        for(int i=1;i<nx-1;i++) //explicit scheme
         {
-            rho[i][j+1]=rho[i][j]*(1.-b*(vx[i+1][j]-vx[i-1][j])-2.*nu*a)+rho[i+1][j]*(-b*vx[i][j]+nu*a)+rho[i-1][j]*(b*vx[i][j]+nu*a);
+            //rho[i][j+1]=rho[i][j]*(1.-2.*a)+rho[i+1][j]*(a-b)+rho[i-1][j]*(a+b);
 
-            P=(p[i+1]-p[i-1])/(4*dx);
+//            rho[i][j+1]=rho[i][j]*(1.-b*(vx[i+1][j]-vx[i-1][j])-2.*nu*a)+rho[i+1][j]*(-b*vx[i][j]+nu*a)+rho[i-1][j]*(b*vx[i][j]+nu*a);
+            rho[i][j+1]=-b*(rho[i+1][j]*vx[i+1][j]-rho[i-1][j]*vx[i-1][j])+rho[i][j];
+
+            P=(p[i+1]-p[i-1])/(4.*dx);
             rhovx[i][j+1]=rhovx[i][j]*(1.-2.*nu*a)+rhovx[i+1][j]*(-b*vx[i+1][j]+nu*a)+rhovx[i-1][j]*(b*vx[i-1][j]+nu*a)-P;
 
-            h[i][j+1]=h[i][j]*(1.-b*(vx[i+1][j]-vx[i-1][j])-2.*nu*a)+h[i+1][j]*(-b*vx[i][j]+nu*a)+h[i-1][j]*(b*vx[i][j]+nu*a);
+//            h[i][j+1]=h[i][j]*(1.-b*(vx[i+1][j]-vx[i-1][j])-2.*nu*a)+h[i+1][j]*(-b*vx[i][j]+nu*a)+h[i-1][j]*(b*vx[i][j]+nu*a);
+            h[i][j+1]=-b*(h[i+1][j]*vx[i+1][j]-h[i-1][j]*vx[i-1][j])+h[i][j];
+
 
             vx[i][j+1]=rhovx[i][j+1]/rho[i][j+1];
 
