@@ -1,6 +1,7 @@
 #ifndef MHD_H
 #define MHD_H
 
+int sgn(double x);
 class MHD
 {
 private:
@@ -9,7 +10,7 @@ private:
 
 public:
 
-    double **rho,**vx,**h,**Bx,*p,**rhovx;
+    double **rho,**vx,**h,**Bx,**p,**rhovx,**E;
     double nu, dt, dx;
     int nx, nt;
     MHD();
@@ -19,6 +20,8 @@ public:
     void setup(double *RHO,double *H,double *VX,double *BX);
     void exp();
     void write(double* x, int n, char*file);
+    void smooth(int nx,int j,double **G);
+
 
 
 };
